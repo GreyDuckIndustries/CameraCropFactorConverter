@@ -13,11 +13,12 @@ def convert_focal_length(focal_length, from_format, to_format):
     converted_focal_length = full_frame_equivalent / crop_factors[to_format]
     return converted_focal_length
 
-def set_format(format):
+def set_format(format, button):
     global selected_format
     selected_format = format
     format_label.config(text=f"Selected Format: {selected_format}")
     convert()
+    update_button_colors(button)
 
 def convert():
     try:
@@ -30,6 +31,13 @@ def convert():
     except ValueError:
         result_text.set("Please enter a valid number for the focal length.")
 
+def update_button_colors(selected_button):
+    for button in format_buttons:
+        if button == selected_button:
+            button.config(style='Selected.TButton')
+        else:
+            button.config(style='TButton')
+
 # GUI Setup
 root = tk.Tk()
 root.title("Focal Length Converter")
@@ -37,8 +45,9 @@ root.title("Focal Length Converter")
 # Set up styles
 style = ttk.Style()
 style.configure('TLabel', font=('Arial', 14))
-style.configure('TButton', font=('Arial', 12))
-style.configure('TFrame', padding="10")
+style.configure('TButton', font=('Arial', 12), padding=10)
+style.configure('Selected.TButton', background='deepskyblue', foreground='white', font=('Arial', 12, 'bold'), padding=10, borderwidth=2, relief='solid')
+style.configure('TFrame', padding="20")
 
 frame = ttk.Frame(root, padding="20")
 frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -53,10 +62,14 @@ formats = ["Full Frame", "APS-C", "Canon APS-C", "Micro Four Thirds", "Fujifilm 
 selected_format = formats[0]  # Default format
 
 def create_format_button(format):
-    return ttk.Button(frame, text=format, command=lambda: set_format(format))
+    button = ttk.Button(frame, text=format, command=lambda: set_format(format, button))
+    return button
 
+format_buttons = []
 for i, format in enumerate(formats):
-    create_format_button(format).grid(row=1+i, column=0, columnspan=2, pady=10, sticky=(tk.W, tk.E))
+    button = create_format_button(format)
+    button.grid(row=1+i, column=0, columnspan=2, pady=10, sticky=(tk.W, tk.E))
+    format_buttons.append(button)
 
 # Format Display
 format_label = ttk.Label(frame, text=f"Selected Format: {selected_format}", font=('Arial', 16))
@@ -78,5 +91,8 @@ crop_factors = {
     'Micro Four Thirds': 2.0,
     'Fujifilm GFX': 0.79
 }
+
+# Set the initial button color
+update_button_colors(format_buttons[0])
 
 root.mainloop()

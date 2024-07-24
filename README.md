@@ -14,3 +14,7 @@ The Focal Length Converter is a graphical user interface (GUI) application desig
 
 - Python 3.x
 - Tkinter (comes pre-installed with Python standard library)
+
+## Usage
+
+- run in terminal:	python focal_length_converter_colored_buttons.py
